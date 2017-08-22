@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\File;
+use App\User;
 
 use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
@@ -23,9 +24,15 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $files = File::where('user_id', Auth::id())->get();
-        return view('home')->with('files', $files);
+        if($request->user()->hasRole('admin')) {
+            $users = User::all();
+            $files = File::all();
+            return view('admin')->with(['files' => $files, 'users' => $users]);
+        } else {
+            $files = File::where('user_id', Auth::id())->get();
+            return view('home')->with('files', $files);
+        }
     }
 }

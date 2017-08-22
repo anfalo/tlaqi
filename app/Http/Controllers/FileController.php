@@ -38,22 +38,37 @@ class FileController extends Controller
      */
     public function store(Request $request)
     {
-        $this->validate($request, [
-            'name'      => 'required',
-            'file'      => 'required|mimes:jpeg,png,pdf'
-        ]);
+        if(isset($request->add)) {
+            $this->validate($request, [
+                'name'      => 'required',
+                'file'      => 'required|mimes:jpeg,png,pdf'
+            ]);
 
-        $file_name = $request->file('file')->getClientOriginalName();
-        $path = $request->file('file')->move('uploads',$file_name);
+            $file_name = $request->file('file')->getClientOriginalName();
+            $path = $request->file('file')->move('uploads',$file_name);
 
-        $file = new File;
-        
-        $file->user_id = Auth::id();
-        $file->owner_id = Auth::id();
-        $file->name = $request->name;
-        $file->file = $path;
+            $file = new File;
+            
+            $file->user_id = Auth::id();
+            $file->owner_id = Auth::id();
+            $file->name = $request->name;
+            $file->file = $path;
+                    
+            $file->save();
+        } elseif(isset($request->forward)) {
+            foreach ($request->files1 as $file_id) {
+                $file = File::findOrFail($file_id);
+
+                $forward = new File;
+
+                $forward->user_id = $request->user_id;
+                $forward->owner_id = $file->owner_id;
+                $forward->name = $file->name;
+                $forward->file = $file->file;
                 
-        $file->save();
+                $forward->save();
+            }
+        }
 
         $files = File::where('user_id', Auth::id())->get();
         return redirect()->action('HomeController@index')->with(['files' => $files]);

@@ -55,7 +55,7 @@
                         {!! Form::label('name', 'File Name:'); !!}
                         {!! Form::text('name', '', ['class' => 'form-control']);!!}
                         {!! Form::file('file');!!}
-                        {!! Form::submit('Send!',['class' => 'btn btn-primary']);!!}
+                        {!! Form::submit('Send!',['name' => 'add', 'class' => 'btn btn-primary']);!!}
                     {!! Form::close() !!}
                 </div>
             </div>
